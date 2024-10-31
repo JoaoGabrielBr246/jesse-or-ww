@@ -1,16 +1,18 @@
 from google.colab import drive
 drive.mount('/content/drive')
 
-!pip install tensorflow matplotlib
+!pip install tensorflow matplotlib ultralytics opencv-python-headless
 
 import tensorflow as tf
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 import matplotlib.pyplot as plt
+import numpy as np
+import cv2
+from ultralytics import YOLO
+import matplotlib.image as mpimg
 
 data_dir = '/content/drive/MyDrive/Colab Notebooks/dataset'
-IMG_HEIGHT = 180
-IMG_WIDTH = 180
-BATCH_SIZE = 32
+IMG_HEIGHT, IMG_WIDTH, BATCH_SIZE = 180, 180, 32
 
 train_datagen = ImageDataGenerator(
     rescale=1.0/255.0,
@@ -55,21 +57,8 @@ plt.show()
 
 model.save('walter_jesse_model.h5')
 
-!pip install ultralytics tensorflow matplotlib opencv-python-headless
-
-from ultralytics import YOLO
-import tensorflow as tf
-import numpy as np
-import cv2
-import matplotlib.pyplot as plt
-import matplotlib.image as mpimg
-from tensorflow.keras.preprocessing import image
-
 yolo_model = YOLO('yolov8n.pt')
 classifier_model = tf.keras.models.load_model('walter_jesse_model.h5')
-
-IMG_HEIGHT = 180
-IMG_WIDTH = 180
 
 def preprocess_face(face_img):
     face_img = cv2.resize(face_img, (IMG_HEIGHT, IMG_WIDTH))
@@ -79,7 +68,6 @@ def preprocess_face(face_img):
 test_image_path = '/content/drive/MyDrive/Colab Notebooks/teste3.jpg'
 results = yolo_model(test_image_path)
 image = cv2.imread(test_image_path)
-
 confidence_threshold = 0.5
 
 for box in results[0].boxes:
